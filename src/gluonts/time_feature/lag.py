@@ -59,6 +59,17 @@ def get_lags_for_frequency(
 
     # Lags are target values at the same `season` (+/- delta) but in the
     # previous cycle.
+    def _make_lags_for_microsecond(multiple, num_cycles=3):
+        # We use previous ``num_cycles`` milliseconds to generate lags
+        return [
+            _make_lags(k * 1000 // multiple, 5) for k in range(1, num_cycles + 1)
+        ]
+    def _make_lags_for_millisecond(multiple, num_cycles=3):
+        # We use previous ``num_cycles`` seconds to generate lags
+        return [
+            _make_lags(k * 1000 // multiple, 5) for k in range(1, num_cycles + 1)
+        ]
+
     def _make_lags_for_second(multiple, num_cycles=3):
         # We use previous ``num_cycles`` hours to generate lags
         return [
@@ -144,6 +155,23 @@ def get_lags_for_frequency(
             _make_lags_for_second(offset.n)
             + _make_lags_for_minute(offset.n / 60)
             + _make_lags_for_hour(offset.n / (60 * 60))
+        )
+    # millisecond
+    elif offset_name == "L":
+        lags = (
+            _make_lags_for_millisecond(offset.n)
+            + _make_lags_for_second(offset.n / 1000)
+            + _make_lags_for_minute(offset.n / (1000 * 60))
+            + _make_lags_for_hour(offset.n / (1000 * 60 * 60))
+        )
+    # microsecond
+    elif offset_name == "U":
+        lags = (
+            _make_lags_for_microsecond(offset.n)
+            + _make_lags_for_millisecond(offset.n / 1000)
+            + _make_lags_for_second(offset.n / (1000 * 1000))
+            # + _make_lags_for_minute(offset.n / (1000 * 1000 * 60))
+            # + _make_lags_for_hour(offset.n / (1000 * 1000 * 60 * 60))
         )
     else:
         raise Exception("invalid frequency")

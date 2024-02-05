@@ -22,6 +22,47 @@ from pydantic import BaseModel
 
 TimeFeature = Callable[[pd.PeriodIndex], np.ndarray]
 
+def microsecond_of_second(index: pd.PeriodIndex) -> np.ndarray:
+    """
+    Microsecond of second encoded as value between [-0.5, 0.5]
+    """
+    return index.to_timestamp().millisecond.values / 999999.0 - 0.5
+
+
+def microsecond_of_second_index(index: pd.PeriodIndex) -> np.ndarray:
+    """
+    Microsecond of second encoded as zero-based index, between 0 and 999_999.
+    """
+    return index.to_timestamp().millisecond.values.astype(float)
+
+
+def microsecond_of_millisecond(index: pd.PeriodIndex) -> np.ndarray:
+    """
+    Microsecond of millisecond encoded as value between [-0.5, 0.5]
+    """
+    return (index.to_timestamp().millisecond.values % 1000) / 999.0 - 0.5
+
+
+def microsecond_of_millisecond_index(index: pd.PeriodIndex) -> np.ndarray:
+    """
+    Microsecond of millisecond encoded as zero-based index, between 0 and 999.
+    """
+    return (index.to_timestamp().millisecond.values % 1000).astype(float)
+
+
+def millisecond_of_second(index: pd.PeriodIndex) -> np.ndarray:
+    """
+    Millisecond of second encoded as value between [-0.5, 0.5]
+    """
+    return index.to_timestamp().millisecond.values / 999.0 - 0.5
+
+
+def millisecond_of_second_index(index: pd.PeriodIndex) -> np.ndarray:
+    """
+    Millisecond of second encoded as zero-based index, between 0 and 999.
+    """
+    return index.to_timestamp().millisecond.values.astype(float)
+
 
 def second_of_minute(index: pd.PeriodIndex) -> np.ndarray:
     """
@@ -228,6 +269,26 @@ def time_features_from_frequency_str(freq_str: str) -> List[TimeFeature]:
             day_of_month,
             day_of_year,
         ],
+        offsets.Milli: [
+            millisecond_of_second,
+            second_of_minute,
+            minute_of_hour,
+            hour_of_day,
+            day_of_week,
+            day_of_month,
+            day_of_year,
+        ],
+        offsets.Micro: [
+            microsecond_of_millisecond,
+            microsecond_of_second,
+            millisecond_of_second,
+            second_of_minute,
+            minute_of_hour,
+            hour_of_day,
+            day_of_week,
+            day_of_month,
+            day_of_year,
+        ],
     }
 
     offset = to_offset(freq_str)
@@ -252,5 +313,7 @@ def time_features_from_frequency_str(freq_str: str) -> List[TimeFeature]:
         T   - minutely
             alias: min
         S   - secondly
+        L   - millisecond
+        U   - microsecond
     """
     raise RuntimeError(supported_freq_msg)
