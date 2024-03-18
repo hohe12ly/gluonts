@@ -162,7 +162,7 @@ def get_lags_for_frequency(
             _make_lags_for_millisecond(offset.n)
             + _make_lags_for_second(offset.n / 1000)
             + _make_lags_for_minute(offset.n / (1000 * 60))
-            + _make_lags_for_hour(offset.n / (1000 * 60 * 60))
+            # + _make_lags_for_hour(offset.n / (1000 * 60 * 60))
         )
     # microsecond
     elif offset_name == "U":

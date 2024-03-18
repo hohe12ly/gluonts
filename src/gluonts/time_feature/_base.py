@@ -26,42 +26,41 @@ def microsecond_of_second(index: pd.PeriodIndex) -> np.ndarray:
     """
     Microsecond of second encoded as value between [-0.5, 0.5]
     """
-    return index.to_timestamp().millisecond.values / 999999.0 - 0.5
-
+    return index.to_timestamp().microsecond.values / 999_999.0 - 0.5
 
 def microsecond_of_second_index(index: pd.PeriodIndex) -> np.ndarray:
     """
     Microsecond of second encoded as zero-based index, between 0 and 999_999.
     """
-    return index.to_timestamp().millisecond.values.astype(float)
+    return index.to_timestamp().microsecond.values.astype(float)
 
 
 def microsecond_of_millisecond(index: pd.PeriodIndex) -> np.ndarray:
     """
     Microsecond of millisecond encoded as value between [-0.5, 0.5]
     """
-    return (index.to_timestamp().millisecond.values % 1000) / 999.0 - 0.5
+    return (index.to_timestamp().microsecond.values % 1000) / 999.0 - 0.5
 
 
 def microsecond_of_millisecond_index(index: pd.PeriodIndex) -> np.ndarray:
     """
     Microsecond of millisecond encoded as zero-based index, between 0 and 999.
     """
-    return (index.to_timestamp().millisecond.values % 1000).astype(float)
+    return (index.to_timestamp().microsecond.values % 1000).astype(float)
 
 
 def millisecond_of_second(index: pd.PeriodIndex) -> np.ndarray:
     """
     Millisecond of second encoded as value between [-0.5, 0.5]
     """
-    return index.to_timestamp().millisecond.values / 999.0 - 0.5
+    return (index.to_timestamp().microsecond.values // 1000) / 999.0 - 0.5
 
 
 def millisecond_of_second_index(index: pd.PeriodIndex) -> np.ndarray:
     """
     Millisecond of second encoded as zero-based index, between 0 and 999.
     """
-    return index.to_timestamp().millisecond.values.astype(float)
+    return (index.to_timestamp().microsecond.values // 1000).astype(float)
 
 
 def second_of_minute(index: pd.PeriodIndex) -> np.ndarray:
@@ -279,8 +278,8 @@ def time_features_from_frequency_str(freq_str: str) -> List[TimeFeature]:
             day_of_year,
         ],
         offsets.Micro: [
-            microsecond_of_millisecond,
             microsecond_of_second,
+            microsecond_of_millisecond,
             millisecond_of_second,
             second_of_minute,
             minute_of_hour,
