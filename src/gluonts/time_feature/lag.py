@@ -60,14 +60,22 @@ def get_lags_for_frequency(
     # Lags are target values at the same `season` (+/- delta) but in the
     # previous cycle.
     def _make_lags_for_microsecond(multiple, num_cycles=3):
-        # We use previous ``num_cycles`` milliseconds to generate lags
-        return [
-            _make_lags(k * 1000 // multiple, 5) for k in range(1, num_cycles + 1)
+        # We use previous ``num_cycles`` to generate lags. total len=num_cycles*3*3
+        return [ # num_cycles at 10us freq; 3 samples/10us
+            _make_lags(k * 10 // multiple, 1) for k in range(1, num_cycles + 1)
+        ] + [ # num_cycles at 100us freq; 3 samples/100us
+            _make_lags(k * 100 // multiple, 1) for k in range(1, num_cycles + 1)
+        ] + [ # num_cycles at 1ms freq; 1 samples/1ms
+            [ k * 1000 // multiple for k in range(1, num_cycles + 1) ]
         ]
     def _make_lags_for_millisecond(multiple, num_cycles=3):
-        # We use previous ``num_cycles`` seconds to generate lags
-        return [
-            _make_lags(k * 1000 // multiple, 5) for k in range(1, num_cycles + 1)
+        # We use previous ``num_cycles`` to generate lags. total len=num_cycles*3*3
+        return [ # num_cycles at 10ms freq; 3 samples/10ms
+            _make_lags(k * 10 // multiple, 1) for k in range(1, num_cycles + 1)
+        ] + [ # num_cycles at 100ms freq; 3 samples/100ms
+            _make_lags(k * 100 // multiple, 1) for k in range(1, num_cycles + 1)
+        ] + [ # num_cycles at 1s freq; 1 samples/1s
+            [ k * 1000 // multiple for k in range(1, num_cycles + 1) ]
         ]
 
     def _make_lags_for_second(multiple, num_cycles=3):
